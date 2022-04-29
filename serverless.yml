@@ -55,3 +55,14 @@ functions:
       - httpApi:
           path: /order
           method: delete
+
+  filter_orders:
+    handler: handler.filter_orders
+    events:
+      - httpApi:
+          path: /orders/{filter_type}/
+          method: get
+          request:
+            parameters:
+              paths:
+                filter_type: true

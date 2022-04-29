@@ -2,6 +2,7 @@ import json
 from exampleco.models.database import Session
 from exampleco.models.database.orders import Order, OrderSchema, StatusType, OrderItem
 from exampleco.models.database.services import Service, ServiceSchema
+import datetime
 
 
 # pylint: disable=unused-argument
@@ -15,6 +16,27 @@ def get_all_orders(event, context):
 
     orders_schema = OrderSchema(many=True)
     orders = Session.query(Order).filter(Order.status != StatusType.deleted)  # exclude deleted
+    results = orders_schema.dump(orders)
+
+    response = {"statusCode": 200, "body": json.dumps(results)}
+
+    return response
+
+
+def filter_orders(event, context):
+    params = event.get("pathParameters", {})
+    filter_type = params.get("filter_type")
+    if filter_type == "THIS_WEEK":
+        start_date = datetime.timedelta(weeks=1)
+    elif filter_type == "THIS_MONTH":
+        start_date = datetime.timedelta(months=1)
+    elif filter_type == "THIS_YEAR":
+        start_date = datetime.timedelta(years=1)
+    else:
+        start_date = datetime.datetime.now()  # no results if range option doesnt match
+    orders_schema = OrderSchema(many=True)
+    orders = Session.query(Order).filter(Order.created_on > start_date,
+                                         Order.status != StatusType.deleted)  # exclude deleted
     results = orders_schema.dump(orders)
 
     response = {"statusCode": 200, "body": json.dumps(results)}
