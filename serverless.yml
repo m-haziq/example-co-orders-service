@@ -9,9 +9,60 @@ provider:
   lambdaHashingVersion: 20201221
 
 functions:
+
+  get_all_services:
+    handler: handler.get_all_services
+    events:
+      - httpApi:
+          path: /services
+          method: get
+
+  get_service_by_id:
+    handler: handler.get_service_by_id
+    events:
+      - httpApi:
+          path: /service/{id}
+          method: get
+          request:
+            parameters:
+              paths:
+                id: true
+
   get_all_orders:
     handler: handler.get_all_orders
     events:
       - httpApi:
           path: /orders
           method: get
+
+  create_new_order:
+    handler: handler.create_new_order
+    events:
+      - httpApi:
+          path: /order
+          method: post
+
+  update_an_order:
+    handler: handler.update_an_order
+    events:
+      - httpApi:
+          path: /order
+          method: put
+
+  delete_an_order:
+    handler: handler.delete_an_order
+    events:
+      - httpApi:
+          path: /order
+          method: delete
+
+  filter_orders:
+    handler: handler.filter_orders
+    events:
+      - httpApi:
+          path: /orders/{filter_type}/
+          method: get
+          request:
+            parameters:
+              paths:
+                filter_type: true
